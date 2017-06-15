@@ -6,7 +6,6 @@
 
     <welcome-file-list>
         <welcome-file>html/titanic.html</welcome-file>
-        <!--<welcome-file>task5/t5_answer.html</welcome-file>-->
     </welcome-file-list>
 
     <servlet>
