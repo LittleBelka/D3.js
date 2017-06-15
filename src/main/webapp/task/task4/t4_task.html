@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    .arc text {
+        font: 10px sans-serif;
+        text-anchor: middle;
+    }
+    .arc path {
+        stroke: #fff;
+    }
+</style>
+<svg width="500" height="290"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+    var svg = d3.select("svg"),
+        width = +svg.attr("width"),
+        height = +svg.attr("height"),
+        radius = Math.min(width, height) / 2,
+        g = svg.append("g").attr("transform",
+            "translate(" + width / 2 + "," + height / 2 + ")"),
+        plotData = [];
+
+    plotData.push({x: 1, y: 0});
+    plotData.push({x: 2, y: 0});
+    plotData.push({x: 3, y: 0});
+
+    var color = d3.scaleOrdinal(["#8a89a6", "#7b6888", "#6b486b",
+        "#a05d56", "#d0743c", "#ff8c00", "#177245"]);
+
+    // set values in pie
+    var pie = d3.pie()
+        .sort(null)
+        .value(function(d) { return d.y; });
+
+    var path = d3.arc()
+        .outerRadius(radius - 10)
+        .innerRadius(0);
+
+    var label = d3.arc()
+        .outerRadius(radius - 40)
+        .innerRadius(radius - 40);
+
+    d3.csv("../data/titanic_data.csv", function(d) {
+        d.pclass = +d.pclass;
+        switch(d.pclass) {
+            case 1:
+                plotData[0].y = plotData[0].y + 1;
+                break;
+            case 2:
+                plotData[1].y = plotData[1].y + 1;
+                break;
+            case 3:
+                plotData[2].y = plotData[2].y + 1;
+                break;
+        }
+
+    }, function(error, data) {
+        if (error) throw error;
+
+        // draw pie chart
+        var arc = g.selectAll(".arc")
+            .data(pie(plotData))
+            .enter().append("g")
+            .attr("class", "arc");
+
+        // add path
+        arc.append("path")
+            .attr("d", path)
+            .attr("fill", function (d) {
+                return color(d.data.x);
+            });
+
+        // add labels to the pies
+        arc.append("text")
+            .attr("transform", function (d) {
+                return "translate(" + label.centroid(d) + ")";
+            })
+            .attr("dy", "0.35em")
+            .text(function (d) {
+                return d.data.x;
+            });
+    });
+</script>

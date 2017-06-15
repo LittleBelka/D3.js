@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="http://d3js.org/d3.v3.min.js"> </script>
+    <style>
+        .axis path, .axis line {
+            fill: none;
+            stroke: #333;
+        }
+        .axis .grid-line {
+            stroke: #000;
+            stroke-opacity: 0.2;
+        }
+        .axis text {
+            font: 10px Verdana;
+        }
+    </style>
+<body>
+<script type="text/javascript">
+
+    var height = 290,
+        width = 500,
+        margin = 30,
+        plotDataMale = [],
+        plotDataFemale = [],
+        pointMale = [];
+        pointFemale = [];
+        countSurvivors = 0;
+
+    // create svg object
+    var svg = d3.select("body").append("svg")
+        .attr("class", "axis")
+        .attr("width", width)
+        .attr("height", height);
+
+    var xAxisLength = width - 2 * margin;
+    var yAxisLength = height - 2 * margin;
+
+    // a function interpolating the values on the x-axis
+    var scaleX = d3.scale.linear()
+        .domain([0, 80])
+        .range([0, xAxisLength]);
+
+    // a function interpolating the values on the y-axis
+    var scaleY = d3.scale.linear()
+        .domain([6, 0])
+        .range([0, yAxisLength]);
+
+    // set the x-axis
+    var xAxis = d3.svg.axis()
+        .scale(scaleX)
+        .orient("bottom")
+        .ticks(14);
+
+    // set the y-axis
+    var yAxis = d3.svg.axis()
+        .scale(scaleY)
+        .orient("left");
+
+    function countPlotData(plotData, age) {
+        var exist = false;
+        var i = 0;
+        while (!exist && plotData.length > 0 && i < plotData.length) {
+            if (plotData[i].x == age) {
+                plotData[i].y = plotData[i].y + 1;
+                exist = true;
+            }
+            i++;
+        }
+        if (!exist) {
+            var obj = {x: age, y: 1};
+            plotData.push(obj);
+        }
+    }
+
+    d3.csv("../data/titanic_data.csv", function(d) {
+        d.survived = +d.survived;
+        if (d.age != "-" && !isNaN(d.age) && d.survived == 1.0) {
+            d.age = +d.age;
+            if (d.sex === 'male')
+                countPlotData(plotDataMale, d.age);
+            else if (d.sex === 'female')
+                countPlotData(plotDataFemale, d.age);
+            countSurvivors++;
+        }
+
+    }, function(error, data) {
+        if (error) throw error;
+
+        function setValues(plotData, point) {
+            plotData.sort(function(a, b) {
+                return parseFloat(a.x) - parseFloat(b.x);
+            });
+            for(i = 0; i < plotData.length; i++) {
+                plotData[i].y = plotData[i].y *100 / countSurvivors;
+                point.push({x: scaleX(plotData[i].x) + margin,
+                            y: scaleY(plotData[i].y) + margin});
+            }
+        }
+
+        setValues(plotDataMale, pointMale);
+        setValues(plotDataFemale, pointFemale);
+
+        // draw x-axis
+        svg.append("g")
+            .attr("class", "x-axis")
+            .attr("transform",  // axis shift down and to the right on margin
+                "translate(" + margin + "," + (height - margin) + ")")
+            .call(xAxis);
+
+        // draw y-axis
+        svg.append("g")
+            .attr("class", "y-axis")
+            .attr("transform", // axis shift down and to the right on margin
+                "translate(" + margin + "," + margin + ")")
+            .call(yAxis);
+
+        // draw vertical grid lines
+        d3.selectAll("g.x-axis g.tick")
+            .append("line")
+            .classed("grid-line", true)
+            .attr("x1", 0)
+            .attr("y1", 0)
+            .attr("x2", 0)
+            .attr("y2", - (yAxisLength));
+
+        // draw horizontal grid lines
+        d3.selectAll("g.y-axis g.tick")
+            .append("line")
+            .classed("grid-line", true)
+            .attr("x1", 0)
+            .attr("y1", 0)
+            .attr("x2", xAxisLength)
+            .attr("y2", 0);
+
+        // add labels to the axes
+        svg.append("g").append("text")
+            .attr("x", margin + 55)
+            .attr("y", margin - 11)
+            .attr("text-anchor", "end")
+            .style("font-size", "11px")
+            .style("font-weight", "bold")
+            .text("Survivors, %");
+
+        svg.append("g").append("text")
+            .attr("x", width - margin + 11)
+            .attr("y", height - margin - 5)
+            .attr("text-anchor", "end")
+            .style("font-size", "11px")
+            .style("font-weight", "bold")
+            .text("Age");
+
+        // add first path
+        svg.append("g").append("path")
+            .attr("d", line(pointMale))
+            .style("stroke", "blue")
+            .style("stroke-width", 2);
+
+        // add second path
+        svg.append("g").append("path")
+            .attr("d", line(pointFemale))
+            .style("stroke", "red")
+            .style("stroke-width", 2);
+    });
+
+    // draw lines that connect the dots
+    var line = d3.svg.line()
+        .x(function(d){return d.x;})
+        .y(function(d){return d.y;});
+</script>
+</body>
+</html>

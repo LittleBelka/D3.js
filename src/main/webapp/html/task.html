@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <title>Titanic</title>
+    <link href="../css/task.css" rel="stylesheet" type="text/css" charset="utf-8" />
+    <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Libre+Baskerville|Varela+Round"
+          rel="stylesheet">
+  </head>
+<body>
+  <header>
+    <a href="titanic.html" class="go-home">Titanic</a>
+    <p class="title-header" id="task-name"></p>
+    <a href="#" class="go-next" id="btn-next" onclick="goNextTask()">Next task</a>
+  </header>
+  <main>
+    <section class="frame-and-task">
+      <section class="frame-edit ">
+        <div id="editor"></div>
+      </section>
+      <section class="check">
+          <button class="btn btn-help" onclick="help()">Help</button>
+          <button class="btn btn-check" onclick="toCheckScreen()">Check</button>
+          <div class="notification" id="check"></div>
+      </section>
+    </section>
+    <section class="frame-visual">
+      <iframe id="frame-answer"></iframe>
+      <iframe id="frame-correct"></iframe>
+    </section>
+  </main>
+  <div id="window-help" class="modal-content invisible">
+    <button class="modal-content-close" type="button" title="Close" onclick="closeHelp()">Close</button>
+    <div class="text-template custom-scrollbar" id="template"></div>
+  </div>
+  <div id="inactive-screen"></div>
+  <script src="../js/general/ace.js"></script>
+  <script src="../js/general/d3js.js"></script>
+  <script src="../js/general/html2canvas.js"></script>
+  <script src="../js/general/resemble.js"></script>
+  <script src="../js/task/task.js"></script>
+</body>
+</html>
