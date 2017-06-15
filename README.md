@@ -3,4 +3,6 @@ The project represents little course from 5 tasks. Tasks dedicated to building p
 The theme of this course is exploration of the Titanic's tragedy.
 For each task in the project I use "ace" editor and two iframes.
 
-![Alt text](/readmi_img/main_page.PNG?raw=true "Main page")
+![Imgur](http://i.imgur.com/rsIdusE.png)
+
+![Imgur](http://i.imgur.com/tDRnGUE.png)
